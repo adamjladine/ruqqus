@@ -9,7 +9,7 @@ $( document ).on(
 
         // Manually change the location of the page to stay in
         // "Standalone" mode and change the URL at the same time.
-        location.href = $( event.target ).attr( "href" );
+        document.location.href = $( event.target ).attr( "href" );
 
     }
 );
