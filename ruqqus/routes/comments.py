@@ -15,6 +15,15 @@ from ruqqus.__main__ import app, db, limiter
 from werkzeug.contrib.atom import AtomFeed
 from datetime import datetime
 
+@app.route("/cid/<cid>", methods=["GET"])
+@admin_level_required(1)
+def comment_cid(cid, v):
+
+    comment=db.query(Comment).filter_by(id=base36decode(cid)).first()
+    if comment:
+        return redirect(comment.permalink)
+    else:
+        abort(404)
 
 @app.route("/post/<p_id>/comment/<c_id>", methods=["GET"])
 @auth_desired
@@ -53,10 +62,16 @@ def api_comment(v):
     body_html=sanitize(body_md, linkgen=True)
 
     #Run safety filter
-    ban=filter_comment_html(body_html)
+    bans=filter_comment_html(body_html)
 
-    if ban:
-        abort(422)
+    if bans:
+        return render_template("comment_failed.html",
+                               parent_submission=request.form.get("submission"),
+                               parent_fullname=request.form.get("parent_fullname"),
+                               badlinks=[x.domain for x in bans],
+                               body=body,
+                               v=v
+                               )
 
     #check existing
     existing=db.query(Comment).filter_by(author_id=v.id,
