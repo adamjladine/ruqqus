@@ -9,7 +9,7 @@ class ID:
     def base36id(self):
         return base36encode(self.id)
 
-class Time:
+class Times:
 
     @property
     def age_string(self):
@@ -76,7 +76,9 @@ class Time:
 
 
 class Fuzzing:
+
     @property
+    @cache.memoize(timeout=60)
     def score_fuzzed(self, k=0.01):
         real = self.score
         a = math.floor(real * (1 - k))
