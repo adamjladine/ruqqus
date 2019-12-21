@@ -1,4 +1,5 @@
 from flask import *
+from sqlalchemy import *
 from ruqqus.__main__ import Base, db
 
 class IP(Base):
